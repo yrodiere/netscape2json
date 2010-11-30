@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if test $# -le 0
+then
+	echo "Usage : netscape2json netscapeSourceFile" >&2
+else
+	# We need to make a well-formed XML file from the html one
+	TMPFILE=/tmp/$1
+	echo '<root>' > "$TMPFILE"
+	sed 's,<\/\?\(DL\|DT\|p\)>,,g' $1 | sed 's,&,&amp;,g' \
+		| grep '^<[Aa].*</[Aa]>' >> "$TMPFILE"
+	echo '</root>' >> "$TMPFILE"
+	# Real program parsing the file
+	exec "./netscape2json.py" $TMPFILE
+fi
